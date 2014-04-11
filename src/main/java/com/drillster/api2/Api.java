@@ -103,31 +103,78 @@ public class Api {
 	}
 
 	/**
-	 * Sends a POST request with url-encoded parameters in the body. The JSON response is parsed into the specified response type, and returned. 
+	 * Sends a POST request with url-encoded parameters in the body. The JSON
+	 * response is parsed into the specified response type, and returned.
 	 */
-	public <T extends com.drillster.api2.general.Response> T sendPostRequest(String url, List<NameValuePair> parameters, Class<T> responseType) throws ApiException {
-		return sendPostRequest(url, parameters, responseType, Error.class);
+	public <T extends com.drillster.api2.general.Response> T sendPostRequest(String url, List<NameValuePair> parameters,
+			Class<T> responseType) throws ApiException {
+		return sendPostRequest(url, parameters, responseType, this.oAuthToken);
+
+	}
+	
+	/**
+	 * Sends a POST request with url-encoded parameters in the body. The JSON
+	 * response is parsed into the specified response type, and returned.
+	 * 
+	 * @param oAuthToken
+	 *            the OAuth authentication token to include in the request, or
+	 *            {@code null} to include no OAuth token.
+	 */
+	public <T extends com.drillster.api2.general.Response> T sendPostRequest(String url, List<NameValuePair> parameters,
+			Class<T> responseType, String oAuthToken) throws ApiException {
+		return sendPostRequest(url, parameters, responseType, Error.class, oAuthToken);
 	}
 
-	public <T extends com.drillster.api2.general.Response> T sendPostRequest(String url, List<NameValuePair> parameters, Class<T> responseType, Class<? extends Error> errorType) throws ApiException {
+	public <T extends com.drillster.api2.general.Response> T sendPostRequest(String url, List<NameValuePair> parameters,
+			Class<T> responseType, Class<? extends Error> errorType) throws ApiException {
+		return sendPostRequest(url, parameters, responseType, errorType, this.oAuthToken);
+	}
+
+	public <T extends com.drillster.api2.general.Response> T sendPostRequest(String url, List<NameValuePair> parameters,
+			Class<T> responseType, Class<? extends Error> errorType, String oAuthToken) throws ApiException {
 		init();
-		return deserializeFromJson(sendRequestInternal(url, new UrlEncodedFormEntity(parameters, Consts.UTF_8), HttpMethod.POST), responseType, errorType);
+		return deserializeFromJson(sendRequestInternal(url, new UrlEncodedFormEntity(parameters, Consts.UTF_8), HttpMethod.POST, oAuthToken),
+				responseType, errorType);
 	}
 
 	/**
 	 * Sends a POST request with url-encoded parameters in the body. No response is expected.
 	 */
 	public void sendPostRequest(String url, List<NameValuePair> parameters) throws ApiException {
+		sendPostRequest(url, parameters, this.oAuthToken);
+	}
+
+	/**
+	 * Sends a POST request with url-encoded parameters in the body. No response
+	 * is expected.
+	 * 
+	 * @param oAuthToken
+	 *            the OAuth authentication token to include in the request, or
+	 *            {@code null} to include no OAuth token.
+	 */
+	public void sendPostRequest(String url, List<NameValuePair> parameters, String oAuthToken) throws ApiException {
 		init();
-		sendRequestInternal(url, new UrlEncodedFormEntity(parameters, Consts.UTF_8), HttpMethod.POST);
+		sendRequestInternal(url, new UrlEncodedFormEntity(parameters, Consts.UTF_8), HttpMethod.POST, oAuthToken);
 	}
 
 	/**
 	 * Sends a Get request to the specified url. The JSON response is parsed into the specified response type, and returned. 
 	 */
 	public <T extends com.drillster.api2.general.Response> T sendGetRequest(String url, Class<T> responseType) throws ApiException {
+		return sendGetRequest(url, responseType, this.oAuthToken);
+	}
+
+	/**
+	 * Sends a Get request to the specified url. The JSON response is parsed
+	 * into the specified response type, and returned.
+	 * 
+	 * @param oAuthToken
+	 *            the OAuth authentication token to include in the request, or
+	 *            {@code null} to include no OAuth token.
+	 */
+	public <T extends com.drillster.api2.general.Response> T sendGetRequest(String url, Class<T> responseType, String oAuthToken) throws ApiException {
 		init();
-		return deserializeFromJson(sendRequestInternal(url, (String)null, HttpMethod.GET), responseType);
+		return deserializeFromJson(sendRequestInternal(url, (String)null, HttpMethod.GET, oAuthToken), responseType);
 	}
 
 
@@ -172,7 +219,7 @@ public class Api {
 		}
 	}
 
-	private HttpResponse sendRequestInternal(String url, String content, HttpMethod method) throws ApiException {
+	private HttpResponse sendRequestInternal(String url, String content, HttpMethod method, String oAuthToken) throws ApiException {
 		LOG.debug("Sending request to " + url + ". Content:\n" + content);
 
 		HttpRequest request;
@@ -197,10 +244,10 @@ public class Api {
 				throw new ApiException(e);
 			}
 		}
-		return sendRequestInternal(request);
+		return sendRequestInternal(request, oAuthToken);
 	}
 
-	private HttpResponse sendRequestInternal(String url, HttpEntity content, HttpMethod method) throws ApiException {
+	private HttpResponse sendRequestInternal(String url, HttpEntity content, HttpMethod method, String oAuthToken) throws ApiException {
 		LOG.debug("Sending request to " + url + ". Content:\n" + content);
 
 		HttpRequest request;
@@ -219,12 +266,12 @@ public class Api {
 				throw new IllegalArgumentException();
 			}
 		}
-		return sendRequestInternal(request);
+		return sendRequestInternal(request, oAuthToken);
 	}
 
-	private HttpResponse sendRequestInternal(HttpRequest httpRequest) throws ApiException {
-		if (this.oAuthToken != null) {
-			httpRequest.addHeader("Authorization", "OAuth " + this.oAuthToken);
+	private HttpResponse sendRequestInternal(HttpRequest httpRequest, String oAuthToken) throws ApiException {
+		if (oAuthToken != null) {
+			httpRequest.addHeader("Authorization", "OAuth " + oAuthToken);
 		}
 		try {
 			return this.httpClient.execute(this.targetHost, httpRequest);
