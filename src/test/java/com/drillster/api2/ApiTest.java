@@ -7,17 +7,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -53,20 +49,20 @@ public class ApiTest {
 		params.add(new BasicNameValuePair("direction", "PRODUCTIVE"));
 		api.sendPostRequest("/2.0/practice-preferences/gVya_ubkaM2Wn41KX2sp9w", params);
 	}
-	
+
 	@Test
 	public void justATest() throws ApiException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
 		SSLContextBuilder builder = new SSLContextBuilder();
-	    builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-	    SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-	            builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-	    CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(
-	            sslsf).build();
-	    
-	    api.setHttpClient(httpClient);
+		builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+				builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(
+				sslsf).build();
+
+		api.setHttpClient(httpClient);
 		api.sendGetRequest("/api/2/drill/rj7XZRD7TBSBcUz1FeTiEw", Drill.class);
 	}
-	
+
 	@Test
 	public void practicePojo() throws ApiException, IOException {
 
@@ -82,7 +78,7 @@ public class ApiTest {
 		String sequence = "Izez87NkTdKQtZ0e0uFebw";
 
 		QuestionResponse response = api.sendGetRequest("/2.0/question/" + duits, QuestionResponse.class);
-		
+
 
 		com.drillster.api2.practice.Question returnedQuestion = response.getQuestion();
 
