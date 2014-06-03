@@ -13,6 +13,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -157,6 +158,45 @@ public class Api {
 		sendRequestInternal(url, new UrlEncodedFormEntity(parameters, Consts.UTF_8), HttpMethod.POST, oAuthToken);
 	}
 
+	
+	/**
+	 * Sends a PUT request with url-encoded parameters in the body.
+	 */
+	public <T extends com.drillster.api2.general.Response> T sendPutRequest(String url, List<NameValuePair> parameters, Class<T> responseType) throws ApiException {
+		return sendPutRequest(url, parameters, responseType, this.oAuthToken);
+	}
+	
+	/**
+	 * Sends a PUT request with url-encoded parameters in the body. 
+	 * 
+	 * @param oAuthToken
+	 *            the OAuth authentication token to include in the request, or
+	 *            {@code null} to include no OAuth token.
+	 */
+	public <T extends com.drillster.api2.general.Response> T sendPutRequest(String url, List<NameValuePair> parameters, Class<T> responseType, String oAuthToken) throws ApiException {
+		init();
+		return deserializeFromJson(sendRequestInternal(url, new UrlEncodedFormEntity(parameters, Consts.UTF_8), HttpMethod.PUT, oAuthToken), responseType);
+	}
+
+	/**
+	 * Sends a DELETE request.
+	 */
+	public <T extends com.drillster.api2.general.Response> T sendDeleteRequest(String url, Class<T> responseType) throws ApiException {
+		return sendDeleteRequest(url, responseType, this.oAuthToken);
+	}
+	
+	/**
+	 * Sends a PUT request with url-encoded parameters in the body. 
+	 * 
+	 * @param oAuthToken
+	 *            the OAuth authentication token to include in the request, or
+	 *            {@code null} to include no OAuth token.
+	 */
+	public <T extends com.drillster.api2.general.Response> T sendDeleteRequest(String url, Class<T> responseType, String oAuthToken) throws ApiException {
+		init();
+		return deserializeFromJson(sendRequestInternal(url, (String)null, HttpMethod.DELETE, oAuthToken), responseType);
+	}
+
 	/**
 	 * Sends a Get request to the specified url. The JSON response is parsed into the specified response type, and returned. 
 	 */
@@ -237,6 +277,9 @@ public class Api {
 						post.setEntity(new StringEntity(content, FORM_CONTENT_TYPE, "UTF-8"));
 					}
 					request = post;
+				} else if (method == HttpMethod.DELETE) {
+					HttpDelete delete = new HttpDelete(url);
+					request = delete;
 				} else {
 					throw new IllegalArgumentException();
 				}

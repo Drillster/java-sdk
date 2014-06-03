@@ -1,27 +1,31 @@
 package com.drillster.api2;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.drillster.api2.drill.Drill;
+import com.drillster.api2.drill.Drillable;
+import com.drillster.api2.message.json.jackson.JacksonMarshaller;
 import com.drillster.api2.practice.AnswerResponse;
 import com.drillster.api2.practice.QuestionResponse;
 import com.drillster.api2.practice.Tell;
@@ -30,10 +34,8 @@ import com.drillster.api2.practice.TermEvaluation;
 
 public class ApiTest {
 
-	private static String oAuthToken = "9a9a8d3d4bf640f9acf76db8cfed8be5";	// tom.vandenberge@gmail.com
-	//private static String oAuthToken = "f800fc6e26d548db86ccdc96099961e7"; // harry@drillster.com
-	//private static String oAuthToken = "f3abdfbc0fd14b02b76156afe40df756"; // dogbert@drillster.com
-	private static String hostName = "localhost.dev.drillster.com";
+	private static String oAuthToken = "17331de2d1da4de0bef1018888bd7bee";	// insert your OAuth token here
+	private static String hostName = "www.drillster.com";
 	private static Integer port = 443;
 	private static String scheme = "https";
 
@@ -47,11 +49,15 @@ public class ApiTest {
 		api.setOAuthToken(oAuthToken);
 	}
 
+	/**
+	 * Tests the polymorphic deserialization of Drillable sub types. 
+	 */
 	@Test
-	public void changePreferences() throws ApiException {
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("direction", "PRODUCTIVE"));
-		api.sendPostRequest("/2.0/practice-preferences/gVya_ubkaM2Wn41KX2sp9w", params);
+	public void deserializeRepertoire() throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper mapper = new JacksonMarshaller().getObjectMapper();
+		InputStream input = this.getClass().getResourceAsStream("/drillable.json");
+		Drillable drill = mapper.readValue(input, Drillable.class);
+		assertEquals("Winnaars Tour de France", drill.getName());
 	}
 	
 	@Test

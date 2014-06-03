@@ -5,6 +5,9 @@ import java.io.IOException;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonSubTypes.Type;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -12,6 +15,9 @@ import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.codehaus.jackson.node.ObjectNode;
 
+import com.drillster.api2.drill.Course;
+import com.drillster.api2.drill.Drill;
+import com.drillster.api2.drill.Drillable;
 import com.drillster.api2.general.Request;
 import com.drillster.api2.general.Response;
 
@@ -104,8 +110,20 @@ public final class JacksonMarshaller {
 	 *	though.
 	 */
 	private static void configureJacksonMixIns(ObjectMapper jsonMapper) {
+		jsonMapper.getDeserializationConfig().addMixInAnnotations(
+				Drillable.class, DrillableMixIn.class);
 	}
 
+	/*
+	 * Mixing for polymorphic Drillable derserialization.
+	 */
+	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+	@JsonSubTypes({ @Type(value = Course.class, name = "COURSE"),
+			@Type(value = Drill.class, name = "DRILL") })
+	private abstract class DrillableMixIn {
+
+	}
+	
 	private ObjectNode requestToTree(Request request) {
 		return this.jsonMapper.valueToTree(request);
 	}
