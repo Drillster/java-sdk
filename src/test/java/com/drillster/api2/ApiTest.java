@@ -59,20 +59,20 @@ public class ApiTest {
 		Drillable drill = mapper.readValue(input, Drillable.class);
 		assertEquals("Winnaars Tour de France", drill.getName());
 	}
-	
+
 	@Test
 	public void justATest() throws ApiException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
 		SSLContextBuilder builder = new SSLContextBuilder();
-	    builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-	    SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-	            builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-	    CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(
-	            sslsf).build();
-	    
-	    api.setHttpClient(httpClient);
+		builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+		SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+				builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(
+				sslsf).build();
+
+		api.setHttpClient(httpClient);
 		api.sendGetRequest("/api/2/drill/rj7XZRD7TBSBcUz1FeTiEw", Drill.class);
 	}
-	
+
 	@Test
 	public void practicePojo() throws ApiException, IOException {
 
@@ -88,7 +88,7 @@ public class ApiTest {
 		String sequence = "Izez87NkTdKQtZ0e0uFebw";
 
 		QuestionResponse response = api.sendGetRequest("/2.0/question/" + duits, QuestionResponse.class);
-		
+
 
 		com.drillster.api2.practice.Question returnedQuestion = response.getQuestion();
 
