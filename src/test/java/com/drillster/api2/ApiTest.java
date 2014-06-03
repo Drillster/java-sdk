@@ -87,7 +87,7 @@ public class ApiTest {
 		String set = "8qeDRydFTUCR1RX-Wcbv3Q";
 		String sequence = "Izez87NkTdKQtZ0e0uFebw";
 
-		QuestionResponse response = api.sendGetRequest("/2.0/question/" + duits, QuestionResponse.class);
+		QuestionResponse response = api.sendGetRequest("/2/question/" + duits, QuestionResponse.class);
 
 
 		com.drillster.api2.practice.Question returnedQuestion = response.getQuestion();
@@ -124,7 +124,7 @@ public class ApiTest {
 
 		System.out.println("Answering " + selectedTerms);
 
-		AnswerResponse answerResponse = api.sendPostRequest("/2.0/answer/" + returnedQuestion.getReference(), selectedTerms, AnswerResponse.class);
+		AnswerResponse answerResponse = api.sendPostRequest("/2/answer/" + returnedQuestion.getReference(), selectedTerms, AnswerResponse.class);
 
 		System.out.print("Your answer was " + answerResponse.getEvaluation().getResult() + ". ");
 		if ("INCORRECT".equals(answerResponse.getEvaluation().getResult())) {
