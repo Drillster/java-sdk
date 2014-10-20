@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import com.drillster.api2.drill.Drill;
 import com.drillster.api2.drill.Drillable;
+import com.drillster.api2.drill.Drillables;
 import com.drillster.api2.message.json.jackson.JacksonMarshaller;
 import com.drillster.api2.practice.AnswerResponse;
 import com.drillster.api2.practice.QuestionResponse;
@@ -59,6 +60,23 @@ public class ApiTest {
 		Drillable drill = mapper.readValue(input, Drillable.class);
 		assertEquals("Winnaars Tour de France", drill.getName());
 	}
+
+
+	/**
+	 *	Tests the polymorphic deserialization of a Drillables object.
+	 */
+	@Test
+	public void deserializeDrillables() throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper mapper = new JacksonMarshaller().getObjectMapper();
+		InputStream input = this.getClass().getResourceAsStream("/drillables.json");
+		Drillables drillables = mapper.readValue(input, Drillables.class);
+		assertEquals(new Integer(7), drillables.getTotal());
+		List<Drillable> drills = drillables.getDrills();
+		assertEquals(7, drills.size());
+		Drill d = (Drill)drills.get(0);
+		assertEquals("Drill zonder instellingen", d.getName());
+	}
+
 
 	@Test
 	public void justATest() throws ApiException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
