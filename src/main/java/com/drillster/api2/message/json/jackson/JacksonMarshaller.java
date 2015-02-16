@@ -95,6 +95,7 @@ public final class JacksonMarshaller {
 		mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Inclusion.NON_NULL);
 		mapper.configure(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
 		configureJacksonMixIns(mapper);
 		return mapper;
