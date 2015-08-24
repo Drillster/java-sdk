@@ -20,6 +20,9 @@ import com.drillster.api2.drill.Drill;
 import com.drillster.api2.drill.Drillable;
 import com.drillster.api2.general.Request;
 import com.drillster.api2.general.Response;
+import com.drillster.api2.user.Actor;
+import com.drillster.api2.user.Organization;
+import com.drillster.api2.user.User;
 
 
 /**
@@ -111,17 +114,29 @@ public final class JacksonMarshaller {
 	 *	though.
 	 */
 	private static void configureJacksonMixIns(ObjectMapper jsonMapper) {
-		jsonMapper.getDeserializationConfig().addMixInAnnotations(
-				Drillable.class, DrillableMixIn.class);
+		jsonMapper.getDeserializationConfig().addMixInAnnotations(Drillable.class, DrillableMixIn.class);
+		jsonMapper.getDeserializationConfig().addMixInAnnotations(Actor.class, ActorMixIn.class);
 	}
 
 	/*
-	 * Mixing for polymorphic Drillable derserialization.
+	 * Mixin for polymorphic Drillable deserialization.
 	 */
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 	@JsonSubTypes({ @Type(value = Course.class, name = "COURSE"),
 			@Type(value = Drill.class, name = "DRILL") })
 	private abstract class DrillableMixIn {
+
+	}
+	
+	/*
+	 * Mixin for polymorphic Actor deserialization.
+	 */
+	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+	@JsonSubTypes({
+			@JsonSubTypes.Type(value = User.class, name="USER"),
+			@JsonSubTypes.Type(value = Organization.class, name="ORGANIZATION")
+	})
+	private abstract class ActorMixIn {
 
 	}
 	
