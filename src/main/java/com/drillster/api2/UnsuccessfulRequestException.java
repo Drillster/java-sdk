@@ -1,18 +1,18 @@
 package com.drillster.api2;
 
-import com.drillster.api2.general.Error;
+import com.drillster.api2.general.ErrorResponse;
 
 @SuppressWarnings("serial")
 public class UnsuccessfulRequestException extends ApiException {
 
-	private Error error;
+	private ErrorResponse error;
 	
-	public UnsuccessfulRequestException(Error error) {
+	public UnsuccessfulRequestException(ErrorResponse error) {
 		super(error.getDescription());
 		this.error = error;
 	}
 	
-	public Error getError() {
+	public ErrorResponse getError() {
 		return this.error;
 	}
 }
