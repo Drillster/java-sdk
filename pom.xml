@@ -50,4 +50,15 @@
 			<version>1.2.17</version>
 		</dependency>
 	</dependencies>
+	
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>nexus</id>
+			<name>Drillster Repository</name>
+			<url>https://nexus.dev.drillster.com/repository/maven-releases/</url>
+			<layout>default</layout>
+		</repository>
+	</distributionManagement>
+	
 </project>
